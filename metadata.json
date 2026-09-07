@@ -1,0 +1,6 @@
+{
+  "name": "Script SPIN Selling para Corretores",
+  "description": "Venda 5 imóveis por mês com um processo de atendimento bem executado para corretores de imóveis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
