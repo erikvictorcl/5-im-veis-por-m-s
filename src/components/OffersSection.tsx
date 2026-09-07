@@ -2,14 +2,37 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { salesContent } from '../config/content';
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 export const OffersSection: React.FC = () => {
   const { offersSection } = salesContent;
   const { offer } = offersSection;
 
-  const handleCheckoutClick = (url?: string) => {
-    if (url) {
-      window.location.href = url;
+  const handleCheckoutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const checkoutUrl = offer.checkoutUrl || "https://pay.cakto.com.br/q2f8yj4_1087377";
+
+    // Dispara o evento InitiateCheckout no Meta Pixel
+    try {
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+        window.fbq('track', 'InitiateCheckout', {
+          content_name: offer.name,
+          value: 10.00,
+          currency: 'BRL',
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao registrar InitiateCheckout:', error);
     }
+
+    // Navega para o checkout garantindo tempo para o disparo da requisição do pixel
+    setTimeout(() => {
+      window.location.href = checkoutUrl;
+    }, 150);
   };
 
   return (
@@ -92,6 +115,7 @@ export const OffersSection: React.FC = () => {
               <a
                 id="offer-1-cta-button"
                 href={offer.checkoutUrl || "https://pay.cakto.com.br/q2f8yj4_1087377"}
+                onClick={handleCheckoutClick}
                 className="block text-center w-full py-4 px-6 rounded-xl bg-[#1F4E79] hover:bg-[#183E62] text-white font-bold text-base tracking-wide transition-all shadow-md hover:shadow-lg active:scale-[0.99] cursor-pointer"
               >
                 {offer.buttonText}
